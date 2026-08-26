@@ -68,6 +68,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          # Needed explicitly: action-gh-release infers this from a tag ref, but a manual
+          # workflow_dispatch run off a branch has no tag ref to infer it from, and the API call
+          # then fails outright with "Missing tag_name parameter" instead of degrading gracefully.
+          tag_name: ${{ github.ref_name }}
           files: ${{ steps.apk.outputs.path }}
           generate_release_notes: true
           # Manual (workflow_dispatch) runs off a branch have no tag to attach the release to —
