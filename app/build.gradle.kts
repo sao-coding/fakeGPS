@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.koimsurai.fakegps"
-        minSdk = 35
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -54,7 +54,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
     // Icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.7")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.cardview:cardview:1.0.0")

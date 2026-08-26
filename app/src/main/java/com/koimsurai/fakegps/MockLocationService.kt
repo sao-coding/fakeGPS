@@ -10,12 +10,15 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
 import android.os.IBinder
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.cos
+import kotlin.random.Random
 
 class MockLocationService : Service() {
 
@@ -30,6 +33,9 @@ class MockLocationService : Service() {
         const val ACTION_STOP_MOCK = "com.koimsurai.fakegps.ACTION_STOP_MOCK"
         const val EXTRA_LATITUDE = "extra_latitude"
         const val EXTRA_LONGITUDE = "extra_longitude"
+        const val EXTRA_JITTER_ENABLED = "extra_jitter_enabled"
+        const val EXTRA_JITTER_RANGE_METERS = "extra_jitter_range_meters"
+        private const val METERS_PER_DEGREE_LAT = 111_320.0
     }
 
     override fun onCreate() {
@@ -42,7 +48,9 @@ class MockLocationService : Service() {
             ACTION_START_MOCK -> {
                 val lat = intent.getDoubleExtra(EXTRA_LATITUDE, 0.0)
                 val lon = intent.getDoubleExtra(EXTRA_LONGITUDE, 0.0)
-                startMockingLocation(lat, lon)
+                val jitterEnabled = intent.getBooleanExtra(EXTRA_JITTER_ENABLED, false)
+                val jitterRangeMeters = intent.getFloatExtra(EXTRA_JITTER_RANGE_METERS, 0f)
+                startMockingLocation(lat, lon, jitterEnabled, jitterRangeMeters)
             }
             ACTION_STOP_MOCK -> {
                 stopMockingLocation()
@@ -52,28 +60,64 @@ class MockLocationService : Service() {
         return START_STICKY
     }
 
-    private fun startMockingLocation(lat: Double, lon: Double) {
+    private fun startMockingLocation(lat: Double, lon: Double, jitterEnabled: Boolean, jitterRangeMeters: Float) {
+        // Go foreground first: the system kills the service if startForeground is never reached,
+        // and setting up the test provider is exactly the step that can fail.
+        startForeground(NOTIFICATION_ID, createNotification(lat, lon))
+
+        // Seed the bus from the start intent (covers the shortcut path, which has no UI open to
+        // have set it already); the loop below then re-reads it every tick, so a change made in
+        // the settings sheet while this is running is not stuck with what we started with.
+        MockLocationBus.updateJitterSettings(jitterEnabled, jitterRangeMeters)
+
         try {
             mockLocationProvider = MockLocationProvider(LocationManager.GPS_PROVIDER, this)
-            
-            val notification = createNotification(lat, lon)
-            startForeground(NOTIFICATION_ID, notification)
 
             serviceJob = serviceScope.launch {
                 while (true) {
-                    mockLocationProvider?.pushLocation(lat, lon)
+                    val jitter = MockLocationBus.jitterSettings.value
+                    val (pushLat, pushLon) = if (jitter.enabled && jitter.rangeMeters > 0f) {
+                        applyJitter(lat, lon, jitter.rangeMeters)
+                    } else {
+                        lat to lon
+                    }
+                    mockLocationProvider?.pushLocation(pushLat, pushLon)
+                    MockLocationBus.publish(pushLat, pushLon)
                     delay(1000)
                 }
             }
         } catch (e: SecurityException) {
-            stopSelf()
+            // "Allow mock locations" not granted to this app in developer options.
+            notifyStartFailed(R.string.toast_enable_mock_locations)
+        } catch (e: IllegalArgumentException) {
+            // The system refused the test provider (e.g. another mock app holds it).
+            notifyStartFailed(R.string.toast_mock_provider_unavailable)
         }
+    }
+
+    private fun notifyStartFailed(messageRes: Int) {
+        Toast.makeText(this, getString(messageRes), Toast.LENGTH_LONG).show()
+        stopMockingLocation()
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+        // The ViewModel already flipped isMocking to true optimistically when the user tapped
+        // start — tell it the attempt actually failed so it can undo that.
+        MockLocationBus.notifyMockStartFailed()
+    }
+
+    /** Nudges the base coordinate by a random offset within [rangeMeters], varying its trailing decimal digits — this is what makes a stationary mock location read as a real, slightly noisy GPS fix. */
+    private fun applyJitter(lat: Double, lon: Double, rangeMeters: Float): Pair<Double, Double> {
+        val metersPerDegreeLon = METERS_PER_DEGREE_LAT * cos(Math.toRadians(lat)).coerceAtLeast(0.01)
+        val dLat = (Random.nextDouble(-1.0, 1.0) * rangeMeters) / METERS_PER_DEGREE_LAT
+        val dLon = (Random.nextDouble(-1.0, 1.0) * rangeMeters) / metersPerDegreeLon
+        return (lat + dLat) to (lon + dLon)
     }
 
     private fun stopMockingLocation() {
         serviceJob?.cancel()
         mockLocationProvider?.shutdown()
         mockLocationProvider = null
+        MockLocationBus.clear()
     }
 
     private fun createNotificationChannel() {

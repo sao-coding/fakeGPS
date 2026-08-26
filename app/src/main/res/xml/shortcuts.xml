@@ -3,10 +3,20 @@
     <shortcut
         android:shortcutId="set_last_location"
         android:enabled="true"
-        android:icon="@drawable/ic_map"
+        android:icon="@drawable/ic_shortcut_start"
         android:shortcutShortLabel="@string/shortcut_set_last_location_short_label">
         <intent
             android:action="com.koimsurai.fakegps.ACTION_SET_LAST_LOCATION"
+            android:targetPackage="com.koimsurai.fakegps"
+            android:targetClass="com.koimsurai.fakegps.ShortcutActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="stop_mock_location"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_stop"
+        android:shortcutShortLabel="@string/shortcut_stop_mock_location_short_label">
+        <intent
+            android:action="com.koimsurai.fakegps.ACTION_STOP_MOCK_LOCATION"
             android:targetPackage="com.koimsurai.fakegps"
             android:targetClass="com.koimsurai.fakegps.ShortcutActivity" />
     </shortcut>

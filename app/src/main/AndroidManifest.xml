@@ -43,6 +43,10 @@
                 <action android:name="com.koimsurai.fakegps.ACTION_SET_LAST_LOCATION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.koimsurai.fakegps.ACTION_STOP_MOCK_LOCATION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <service
             android:name=".MockLocationService"

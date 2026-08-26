@@ -10,25 +10,73 @@
     <string name="stop_mock_location">停止模擬</string>
     <string name="toggle_map_visibility">顯示/隱藏地圖</string>
     <string name="map_hidden_message">地圖已隱藏</string>
+    <string name="use_current_location">使用目前定位</string>
+    <string name="locating">定位中…</string>
+    <string name="mocking_status_active">模擬中</string>
+    <string name="mocking_status_inactive">未啟動</string>
+    <string name="coordinates_format">%1$.6f, %2$.6f</string>
+    <string name="latitude_label">緯度</string>
+    <string name="longitude_label">經度</string>
+    <string name="coordinate_component_format">%1$.6f</string>
+    <string name="quick_action_favorites">最愛</string>
+    <string name="quick_action_add">加入</string>
+    <string name="quick_action_jitter">飄移</string>
+    <string name="jitter_state_off">關閉</string>
+    <string name="jitter_state_on_format">±%.0f 公尺</string>
+    <string name="sheet_expand">展開面板</string>
+    <string name="live_position_label">實際送出</string>
+    <string name="live_offset_format">偏移 %.0f 公尺</string>
+    <string name="no_location_selected">尚未選擇位置</string>
 
     <!-- Favorites -->
     <string name="favorites_title">我的最愛</string>
+    <string name="favorites_count_suffix_format">（%d）</string>
+    <string name="favorites_empty">尚未加入任何最愛地點</string>
     <string name="add_favorite_dialog_title">新增至最愛</string>
     <string name="favorite_name_hint">為此地點命名</string>
+    <string name="favorite_name_duplicate_error">此名稱已被使用，請換一個</string>
+    <string name="favorite_name_blank_error">名稱不能為空</string>
+    <string name="delete_favorite_confirm_title">刪除最愛地點</string>
+    <string name="delete_favorite_confirm_message">確定要刪除「%s」嗎？此動作無法復原。</string>
+    <string name="action_delete">刪除</string>
     <string name="save">儲存</string>
     <string name="cancel">取消</string>
+    <string name="close">關閉</string>
+
+    <!-- Settings -->
+    <string name="settings_title">模擬設定</string>
+    <string name="settings_icon_description">模擬設定</string>
+    <string name="jitter_switch_title">隨機座標飄移</string>
+    <string name="jitter_switch_description">模擬時讓座標在小範圍內隨機浮動，更接近真實 GPS 訊號</string>
+    <string name="jitter_range_label">飄移幅度</string>
+    <string name="jitter_range_small">±3 公尺</string>
+    <string name="jitter_range_medium">±10 公尺</string>
+    <string name="jitter_range_large">±30 公尺</string>
+    <string name="jitter_chip_format">飄移 ±%.0f 公尺</string>
 
     <!-- Toasts & Messages -->
     <string name="toast_select_location_first">請先在地圖上選擇一個位置</string>
     <string name="toast_favorite_saved">已儲存至最愛</string>
     <string name="toast_favorite_deleted">已刪除最愛</string>
     <string name="toast_name_cannot_be_empty">名稱不能為空</string>
+    <string name="toast_favorite_name_duplicate">此名稱已被使用，請換一個</string>
     <string name="toast_address_not_found">找不到地址</string>
     <string name="toast_geocoder_not_available">地理編碼服務不可用</string>
     <string name="toast_mock_location_started">模擬位置已啟動</string>
     <string name="toast_mock_location_stopped">模擬位置已停止</string>
     <string name="toast_enable_mock_locations">請至「開發者選項」啟用「允許模擬位置」</string>
+    <string name="toast_location_permission_required">請先允許定位權限</string>
+    <string name="toast_location_disabled">請開啟定位服務（GPS）</string>
+    <string name="toast_location_timeout">定位逾時，請重試</string>
+    <string name="toast_mock_provider_unavailable">無法建立模擬位置服務，請確認沒有其他模擬定位 App 正在執行</string>
+    <string name="preflight_dialog_title">開始模擬前，請先完成設定</string>
+    <string name="preflight_location_off">定位服務（GPS）目前是關閉的</string>
+    <string name="preflight_location_off_action">前往定位設定</string>
+    <string name="preflight_mock_not_allowed">尚未在開發者選項中允許本 App 模擬位置</string>
+    <string name="preflight_mock_not_allowed_action">前往開發者選項</string>
     <string name="shortcut_set_last_location_short_label">設定最後定位位置</string>
+    <string name="shortcut_stop_mock_location_short_label">停用模擬功能</string>
+    <string name="toast_mock_location_not_running">目前沒有正在執行的模擬位置</string>
     <string name="delete_favorite">刪除最愛</string>
     <string name="toast_no_last_location_saved">沒有儲存最後位置</string>
     <string name="notification_channel_name">模擬位置服務</string>
